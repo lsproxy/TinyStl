@@ -6,6 +6,7 @@
 using namespace std;
 
 namespace TinyStl{
+
     template<typename T>
     class allocator{
     public:
@@ -69,4 +70,11 @@ namespace TinyStl{
         for(;first != last; ++first)
             first->~T();
     }
+}
+
+void allocator_test(){
+    int* p = TinyStl::allocator<int>::allocate();
+    TinyStl::allocator<int>::construct(p,2);
+    cout << *p << endl;
+    TinyStl::allocator<int>::destroy(p);
 }
