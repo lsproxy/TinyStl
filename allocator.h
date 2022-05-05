@@ -24,12 +24,12 @@ namespace TinyStl{
     };
 
     template<class T>
-    T* allocate<T>::allocate(){
+    T* allocator<T>::allocate(){
         return (T*)malloc(sizeof(T));
     }
 
     template<typename T>
-    T* allocate<T>::allocate(size_type n){
+    T* allocator<T>::allocate(size_t n){
         if (n <= 0)
         {
             return nullptr;
