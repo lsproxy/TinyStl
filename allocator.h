@@ -1,8 +1,11 @@
-#pragma once
+#ifndef _ALLOCATOR_
+#define _ALLOCATOR_
+
 //粗糙版的allocateor
 //底层暂时采用malloc 和 free
 //暂时不实现自己的内存池
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 namespace TinyStl{
@@ -11,11 +14,12 @@ namespace TinyStl{
     class allocator{
     public:
         //静态方法定义
-        static T* allocate();
-        static T* allocate(size_t n);
-        static void deallocate(T* ptr);
-        static void deallocate(T* ptr, size_t n);
+        static T* alloc();
+        static T* alloc(size_t n);
+        static void dealloc(T* ptr);
+        static void dealloc(T* ptr, size_t n);
         
+        static T* realloc(T* ptr, size_t n);
         static void construct(T* ptr);
         static void construct(T* ptr, const T& value);
         
@@ -25,12 +29,12 @@ namespace TinyStl{
     };
 
     template<class T>
-    T* allocator<T>::allocate(){
+    T* allocator<T>::alloc(){
         return (T*)malloc(sizeof(T));
     }
 
     template<typename T>
-    T* allocator<T>::allocate(size_t n){
+    T* allocator<T>::alloc(size_t n){
         if (n <= 0)
         {
             return nullptr;
@@ -39,15 +43,20 @@ namespace TinyStl{
     }
 
     template<typename T>
-    void allocator<T>::deallocate(T* ptr){
+    T* allocator<T>::realloc(T* ptr, size_t n){
+        return (T* )std::realloc((void*)ptr, n * sizeof(T));
+    }
+
+    template<typename T>
+    void allocator<T>::dealloc(T* ptr){
         if(ptr == nullptr)
             return;
         free(ptr);
     }
 
     template<typename T>
-    void allocator<T>::deallocate(T* ptr, size_t n){
-        allocator<T>::deallocate(ptr);
+    void allocator<T>::dealloc(T* ptr, size_t n){
+        allocator<T>::dealloc(ptr);
     }
 
     template<typename T>
@@ -73,8 +82,10 @@ namespace TinyStl{
 }
 
 void allocator_test(){
-    int* p = TinyStl::allocator<int>::allocate();
+    int* p = TinyStl::allocator<int>::alloc();
     TinyStl::allocator<int>::construct(p,2);
     cout << *p << endl;
     TinyStl::allocator<int>::destroy(p);
 }
+
+#endif
